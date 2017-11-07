@@ -1,5 +1,6 @@
 import Core from './core';
 import Dashboard from '../dashboard';
+import {Arc, Layer, Stage, Text} from "konva";
 
 //import * as Konva from 'konva';
 declare let Konva: any;
@@ -24,7 +25,6 @@ export default class View {
 
     private cadenceArcX: number = 0;
     private cadenceArcY: number = 0;
-    private acrToBackground: number = 5;
 
     private checkSpeedInterval: number = 1000;
     private checkSpeedIntervalObject = null;
@@ -32,7 +32,12 @@ export default class View {
 
     private speedArcX: number;
     private speedArcY: number;
-    private speedArcWidth: number;
+    private speedDisplayFullX: number;
+    private speedDisplayFullY: number;
+    private speedDisplayDecimalX: number;
+    private speedDisplayDecimalY: number;
+
+    private arcWidth: number;
     private arcInnerRadius: number;
 
     private arcOuterRadius: number;
@@ -43,12 +48,9 @@ export default class View {
     private checkCadenceInterval: number = 1000;
 
     private checkCadenceIntervalObject = null;
-    private cadenceArcInnerRadius: number;
 
-    private cadenceArcOuterRadius: number;
     private stage;
     private layer;
-
     private mask;
     private speedDisplayFull;
     private speedDisplayDecimal;
@@ -57,7 +59,15 @@ export default class View {
     private averageSpeedArc;
     private averageCadenceArc;
     private cadenceArcBackground;
+    private cadenceDisplay;
     private curCadenceArc;
+    private speedDisplayFullSize: number;
+    private speedDisplayDecimalSize: number;
+
+    private speedArcRotation: number = 270;
+    private candenceArcRotation: number = 90;
+    private cadenceDisplayX: number;
+    private cadenceDisplayY: number;
 
     /**
      *
@@ -69,12 +79,25 @@ export default class View {
         this.stageHeight = stageHeight;
         this.stageContainer = stageContainer;
 
-        this.speedArcWidth = this.stageHeight * 0.05;
+        this.arcWidth = this.stageHeight * 0.05;
         this.arcOuterRadius = this.stageHeight * 0.9 / 2;
-        this.arcInnerRadius = this.arcOuterRadius - this.speedArcWidth;
+        this.arcInnerRadius = this.arcOuterRadius - this.arcWidth;
 
-        this.cadenceArcInnerRadius = this.arcInnerRadius - 55;
-        this.cadenceArcOuterRadius = this.arcOuterRadius - 25;
+        this.speedArcX = this.stageWidth - this.arcOuterRadius - (this.stageWidth * 0.02);
+        this.speedArcY = this.stageHeight / 2;
+
+        this.speedDisplayFullX = this.stageWidth * 0.53;
+        this.speedDisplayFullY = this.stageHeight * 0.35;
+        this.speedDisplayFullSize = this.stageHeight * 0.3;
+        this.speedDisplayDecimalX = this.stageWidth * 0.85;
+        this.speedDisplayDecimalY = this.speedDisplayFullY;
+        this.speedDisplayDecimalSize = this.stageHeight * 0.15;
+
+        this.cadenceDisplayX = this.stageWidth * 0.53;
+        this.cadenceDisplayY = this.stageHeight * 0.35;
+
+        this.cadenceArcX = this.arcOuterRadius + (this.stageWidth * 0.02);
+        this.cadenceArcY = this.stageHeight / 2;
     }
 
     /**
@@ -89,12 +112,6 @@ export default class View {
                     height: this.stageHeight
                 }
             );
-
-        this.speedArcX = this.arcOuterRadius + (this.stageWidth * 0.02);
-        this.speedArcY = this.stageHeight / 2;
-
-        this.cadenceArcX = this.stageWidth - this.arcOuterRadius - (this.stageWidth * 0.02);
-        this.cadenceArcY = this.stageHeight / 2;
 
         this.layer = new Konva.Layer();
 
@@ -121,7 +138,7 @@ export default class View {
                     outerRadius: this.arcOuterRadius,
                     angle: 180,
                     fill: this.arcBackgroundColor,
-                    rotation: 90
+                    rotation: this.speedArcRotation
                 }
             );
 
@@ -134,7 +151,7 @@ export default class View {
                     outerRadius: this.arcOuterRadius,
                     angle: 180,
                     fill: this.arcForeGroundColor,
-                    rotation: 90,
+                    rotation: this.speedArcRotation,
                     shadowEnabled: true,
                     shadowBlur: 10,
                     shadowColor: this.arcForeGroundShadowColor
@@ -151,7 +168,7 @@ export default class View {
                     angle: 2,
                     opacity: 0.9,
                     fill: this.arcPointerColor,
-                    rotation: 90,
+                    rotation: this.speedArcRotation,
                     shadowEnabled: true,
                     shadowBlur: 10,
                     shadowColor: this.arcPointerShadowColor
@@ -168,7 +185,7 @@ export default class View {
                     angle: 2,
                     opacity: 0.9,
                     fill: this.arcPointerColor,
-                    rotation: 270,
+                    rotation: this.candenceArcRotation,
                     shadowEnabled: true,
                     shadowBlur: 10,
                     shadowColor: this.arcPointerShadowColor
@@ -184,7 +201,7 @@ export default class View {
                     outerRadius: this.arcOuterRadius,
                     angle: 180,
                     fill: this.arcBackgroundColor,
-                    rotation: 270
+                    rotation: this.candenceArcRotation
                 }
             );
 
@@ -197,44 +214,61 @@ export default class View {
                     outerRadius: this.arcOuterRadius,
                     angle: 180,
                     fill: this.arcForeGroundColor,
-                    rotation: 270,
+                    rotation: this.candenceArcRotation,
                     shadowEnabled: true,
                     shadowBlur: 10,
                     shadowColor: this.arcForeGroundShadowColor
                 }
             );
 
-        this.speedDisplayFull = new Konva.Text(
-            {
-                x: this.stageWidth / 2.3,
-                y: this.cadenceArcY - 95,
-                width: this.stageWidth / 4,
-                text: '0',
-                fontSize: 110,
-                fontFamily: 'UniSans',
-                fill: '#fff',
-                align: 'right',
-                shadowEnabled: true,
-                shadowBlur: 5,
-                shadowColor: '#fff'
-            }
-        );
+        this.cadenceDisplay =
+            new Konva.Text(
+                {
+                    x: this.cadenceDisplayX,
+                    y: this.cadenceDisplayY,
+                    text: '0',
+                    fontSize: this.speedDisplayFullSize,
+                    fontFamily: 'UniSans',
+                    fill: '#fff',
+                    align: 'right',
+                    width: this.stageWidth * 0.3,
+                    shadowEnabled: true,
+                    shadowBlur: 5,
+                    shadowColor: '#fff',
+                }
+            );
 
-        this.speedDisplayDecimal = new Konva.Text(
-            {
-                x: this.stageWidth / 2.3 + this.stageWidth / 4 + 15,
-                y: this.cadenceArcY - 55,
-                width: this.stageWidth / 5,
-                text: '0',
-                fontSize: 50,
-                fontFamily: 'UniSans',
-                fill: '#fff',
-                align: 'left',
-                shadowEnabled: true,
-                shadowBlur: 5,
-                shadowColor: '#fff'
-            }
-        );
+        this.speedDisplayFull =
+            new Konva.Text(
+                {
+                    x: this.speedDisplayFullX,
+                    y: this.speedDisplayFullY,
+                    text: '0',
+                    fontSize: this.speedDisplayFullSize,
+                    fontFamily: 'UniSans',
+                    fill: '#fff',
+                    align: 'right',
+                    width: this.stageWidth * 0.3,
+                    shadowEnabled: true,
+                    shadowBlur: 5,
+                    shadowColor: '#fff',
+                }
+            );
+
+        this.speedDisplayDecimal =
+            new Konva.Text(
+                {
+                    x: this.speedDisplayDecimalX,
+                    y: this.speedDisplayDecimalY,
+                    text: '0',
+                    fontSize: this.speedDisplayDecimalSize,
+                    fontFamily: 'UniSans',
+                    fill: '#fff',
+                    shadowEnabled: true,
+                    shadowBlur: 5,
+                    shadowColor: '#fff',
+                }
+            );
 
         this.mask.add(this.speedArcBackground);
         this.mask.add(this.cadenceArcBackground);
