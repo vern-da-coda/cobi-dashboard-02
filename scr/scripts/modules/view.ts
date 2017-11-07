@@ -74,6 +74,9 @@ export default class View {
     private cadenceDisplayMax;
     private cadenceDisplayMaxX: number;
     private cadenceDisplayMaxY: number;
+    private speedBottom;
+    private bottomWidth: number;
+    private cadenceBottom;
 
     /**
      *
@@ -90,6 +93,8 @@ export default class View {
         this.arcInnerRadius = this.arcOuterRadius - this.arcWidth;
 
         this.displayMaxSize = this.stageHeight * 0.1;
+
+        this.bottomWidth = this.stageWidth * 0.19;
 
         this.speedArcX = this.stageWidth - this.arcOuterRadius - (this.stageWidth * 0.02);
         this.speedArcY = this.stageHeight / 2;
@@ -150,8 +155,19 @@ export default class View {
                     innerRadius: this.arcInnerRadius,
                     outerRadius: this.arcOuterRadius,
                     angle: 180,
-                    fill: this.arcBackgroundColor,
+                    fill: this.arcForeGroundColor,
                     rotation: this.speedArcRotation
+                }
+            );
+
+        this.speedBottom =
+            new Konva.Rect(
+                {
+                    x: this.speedArcX - this.bottomWidth,
+                    y: this.arcOuterRadius * 2,
+                    width: this.bottomWidth,
+                    height: this.arcWidth,
+                    fill: this.arcBackgroundColor,
                 }
             );
 
@@ -163,7 +179,7 @@ export default class View {
                     innerRadius: this.arcInnerRadius,
                     outerRadius: this.arcOuterRadius,
                     angle: 180,
-                    fill: this.arcForeGroundColor,
+                    fill: this.arcBackgroundColor,
                     rotation: this.speedArcRotation,
                     shadowEnabled: true,
                     shadowBlur: 10,
@@ -215,6 +231,17 @@ export default class View {
                     angle: 180,
                     fill: this.arcBackgroundColor,
                     rotation: this.candenceArcRotation
+                }
+            );
+
+        this.cadenceBottom =
+            new Konva.Rect(
+                {
+                    x: this.cadenceArcX,
+                    y: this.arcOuterRadius * 2,
+                    width: this.bottomWidth,
+                    height: this.arcWidth,
+                    fill: this.arcBackgroundColor,
                 }
             );
 
@@ -316,7 +343,9 @@ export default class View {
             );
 
         this.mask.add(this.speedArcBackground);
+        this.mask.add(this.speedBottom);
         this.mask.add(this.cadenceArcBackground);
+        this.mask.add(this.cadenceBottom);
 
         this.mask.add(this.curSpeedArc);
         this.mask.add(this.averageSpeedArc);
@@ -405,7 +434,9 @@ export default class View {
 
         this.core.setMaxSpeed(speed);
 
-        let opacity = 1;
+        let opacity: number = 1;
+        let color: string = this.arcBackgroundColor;
+
         if (speed === 0) {
             opacity = 0;
         }
@@ -418,6 +449,22 @@ export default class View {
                     easing: Konva.Easings.EaseInOut,
                     duration: 0.5,
                     opacity: opacity
+                }
+            );
+
+        tween.play();
+
+        if (speed > 0) {
+            color = this.arcForeGroundColor;
+        }
+
+        tween =
+            new Konva.Tween(
+                {
+                    node: this.speedBottom,
+                    easing: Konva.Easings.EaseInOut,
+                    duration: 0.5,
+                    fill: color,
                 }
             );
 
@@ -449,8 +496,9 @@ export default class View {
 
         this.cadenceDisplayMax.text(this.core.getMaxCadence());
 
+        let opacity: number = 1;
+        let color: string = this.arcBackgroundColor;
 
-        let opacity = 1;
         if (cadence === 0) {
             opacity = 0;
         }
@@ -463,6 +511,22 @@ export default class View {
                     easing: Konva.Easings.EaseInOut,
                     duration: 0.5,
                     opacity: opacity
+                }
+            );
+
+        tween.play();
+
+        if (cadence > 0) {
+            color = this.arcForeGroundColor;
+        }
+
+        tween =
+            new Konva.Tween(
+                {
+                    node: this.cadenceBottom,
+                    easing: Konva.Easings.EaseInOut,
+                    duration: 0.5,
+                    fill: color,
                 }
             );
 
