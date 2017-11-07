@@ -1,6 +1,5 @@
 import Core from './core';
 import Dashboard from '../dashboard';
-import {Arc, Layer, Stage, Text} from "konva";
 
 //import * as Konva from 'konva';
 declare let Konva: any;
@@ -68,6 +67,13 @@ export default class View {
     private candenceArcRotation: number = 90;
     private cadenceDisplayX: number;
     private cadenceDisplayY: number;
+    private speedDisplayMax;
+    private speedDisplayMaxX: number;
+    private speedDisplayMaxY: number;
+    private displayMaxSize: number;
+    private cadenceDisplayMax;
+    private cadenceDisplayMaxX: number;
+    private cadenceDisplayMaxY: number;
 
     /**
      *
@@ -83,6 +89,8 @@ export default class View {
         this.arcOuterRadius = this.stageHeight * 0.9 / 2;
         this.arcInnerRadius = this.arcOuterRadius - this.arcWidth;
 
+        this.displayMaxSize = this.stageHeight * 0.1;
+
         this.speedArcX = this.stageWidth - this.arcOuterRadius - (this.stageWidth * 0.02);
         this.speedArcY = this.stageHeight / 2;
 
@@ -92,9 +100,14 @@ export default class View {
         this.speedDisplayDecimalX = this.stageWidth * 0.85;
         this.speedDisplayDecimalY = this.speedDisplayFullY;
         this.speedDisplayDecimalSize = this.stageHeight * 0.15;
+        this.speedDisplayMaxX = this.speedArcX - (this.stageWidth * 0.12);
+        this.speedDisplayMaxY = this.stageWidth * 0.02;
 
-        this.cadenceDisplayX = this.stageWidth * 0.53;
+        this.cadenceDisplayX = this.stageWidth * 0.02;
         this.cadenceDisplayY = this.stageHeight * 0.35;
+
+        this.cadenceDisplayMaxX = this.cadenceArcX + (this.stageWidth * 0.3);
+        this.cadenceDisplayMaxY = this.stageWidth * 0.02;
 
         this.cadenceArcX = this.arcOuterRadius + (this.stageWidth * 0.02);
         this.cadenceArcY = this.stageHeight / 2;
@@ -270,6 +283,38 @@ export default class View {
                 }
             );
 
+        this.speedDisplayMax =
+            new Konva.Text(
+                {
+                    x: this.speedDisplayMaxX,
+                    y: this.speedDisplayMaxY,
+                    text: '0',
+                    fontSize: this.displayMaxSize,
+                    fontFamily: 'UniSans',
+                    fill: '#fff',
+                    align: 'right',
+                    shadowEnabled: true,
+                    shadowBlur: 5,
+                    shadowColor: '#fff',
+                }
+            );
+
+        this.cadenceDisplayMax =
+            new Konva.Text(
+                {
+                    x: this.cadenceDisplayMaxX,
+                    y: this.cadenceDisplayMaxY,
+                    text: '0',
+                    fontSize: this.displayMaxSize,
+                    fontFamily: 'UniSans',
+                    fill: '#fff',
+                    align: 'right',
+                    shadowEnabled: true,
+                    shadowBlur: 5,
+                    shadowColor: '#fff',
+                }
+            );
+
         this.mask.add(this.speedArcBackground);
         this.mask.add(this.cadenceArcBackground);
 
@@ -282,6 +327,9 @@ export default class View {
         this.layer.add(this.mask);
         this.layer.add(this.speedDisplayFull);
         this.layer.add(this.speedDisplayDecimal);
+        this.layer.add(this.speedDisplayMax);
+        this.layer.add(this.cadenceDisplay);
+        this.layer.add(this.cadenceDisplayMax);
 
         this.stage.add(this.layer);
 
@@ -353,6 +401,7 @@ export default class View {
 
         this.speedDisplayFull.text(speedFull[0]);
         this.speedDisplayDecimal.text(speedFull[1]);
+        this.speedDisplayMax.text(this.core.getMaxSpeed());
 
         this.core.setMaxSpeed(speed);
 
@@ -394,6 +443,12 @@ export default class View {
 
         this.core.setMaxCadence(cadence);
         this.core.setAverageCadence(cadence);
+
+        let cadenceFull = Core.decimal(cadence).split('.');
+        this.cadenceDisplay.text(cadenceFull[0]);
+
+        this.cadenceDisplayMax.text(this.core.getMaxCadence());
+
 
         let opacity = 1;
         if (cadence === 0) {
@@ -439,7 +494,7 @@ export default class View {
 
         let rotation = 0;
         if (speed !== 0) {
-            rotation = this.core.calculateSpeedBasedRotation(speed) + 90;
+            rotation = this.core.calculateSpeedBasedRotation(speed) - this.speedArcRotation;
         }
 
         let tween =
