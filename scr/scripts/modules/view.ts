@@ -50,7 +50,7 @@ export default class View {
 
     private stage;
     private layer;
-    private mask;
+    private speedMask;
     private speedDisplayFull;
     private speedDisplayDecimal;
     private speedArcBackground;
@@ -77,6 +77,9 @@ export default class View {
     private speedBottom;
     private bottomWidth: number;
     private cadenceBottom;
+    private arcForeGroundShadowBlur: number = 10;
+    private arcPointerShadowBlur: number = 10;
+    private bottomBar;
 
     /**
      *
@@ -100,7 +103,7 @@ export default class View {
         this.speedArcY = this.stageHeight / 2;
 
         this.speedDisplayFullX = this.stageWidth * 0.53;
-        this.speedDisplayFullY = this.stageHeight * 0.35;
+        this.speedDisplayFullY = this.stageHeight * 0.55;
         this.speedDisplayFullSize = this.stageHeight * 0.3;
         this.speedDisplayDecimalX = this.stageWidth * 0.85;
         this.speedDisplayDecimalY = this.speedDisplayFullY;
@@ -109,7 +112,7 @@ export default class View {
         this.speedDisplayMaxY = this.stageWidth * 0.02;
 
         this.cadenceDisplayX = this.stageWidth * 0.02;
-        this.cadenceDisplayY = this.stageHeight * 0.35;
+        this.cadenceDisplayY = this.stageHeight * 0.55;
 
         this.cadenceDisplayMaxX = this.cadenceArcX + (this.stageWidth * 0.3);
         this.cadenceDisplayMaxY = this.stageWidth * 0.02;
@@ -133,15 +136,15 @@ export default class View {
 
         this.layer = new Konva.Layer();
 
-        this.mask =
+        this.speedMask =
             new Konva.Group(
                 {
 
                     clip: {
-                        x: 0,
+                        x: this.speedArcX,
                         y: 0,
                         width: this.stageWidth,
-                        height: this.stageHeight
+                        height: this.stageHeight,
                     }
 
                 }
@@ -155,7 +158,7 @@ export default class View {
                     innerRadius: this.arcInnerRadius,
                     outerRadius: this.arcOuterRadius,
                     angle: 180,
-                    fill: this.arcForeGroundColor,
+                    fill: this.arcBackgroundColor,
                     rotation: this.speedArcRotation
                 }
             );
@@ -168,6 +171,9 @@ export default class View {
                     width: this.bottomWidth,
                     height: this.arcWidth,
                     fill: this.arcBackgroundColor,
+                    shadowEnabled: true,
+                    shadowBlur: this.arcForeGroundShadowBlur,
+                    shadowColor: this.arcForeGroundShadowColor
                 }
             );
 
@@ -179,10 +185,10 @@ export default class View {
                     innerRadius: this.arcInnerRadius,
                     outerRadius: this.arcOuterRadius,
                     angle: 180,
-                    fill: this.arcBackgroundColor,
+                    fill: this.arcForeGroundShadowColor,
                     rotation: this.speedArcRotation,
                     shadowEnabled: true,
-                    shadowBlur: 10,
+                    shadowBlur: this.arcForeGroundShadowBlur,
                     shadowColor: this.arcForeGroundShadowColor
                 }
             );
@@ -199,7 +205,7 @@ export default class View {
                     fill: this.arcPointerColor,
                     rotation: this.speedArcRotation,
                     shadowEnabled: true,
-                    shadowBlur: 10,
+                    shadowBlur: this.arcPointerShadowBlur,
                     shadowColor: this.arcPointerShadowColor
                 }
             );
@@ -216,7 +222,7 @@ export default class View {
                     fill: this.arcPointerColor,
                     rotation: this.candenceArcRotation,
                     shadowEnabled: true,
-                    shadowBlur: 10,
+                    shadowBlur: this.arcPointerShadowBlur,
                     shadowColor: this.arcPointerShadowColor
                 }
             );
@@ -242,6 +248,9 @@ export default class View {
                     width: this.bottomWidth,
                     height: this.arcWidth,
                     fill: this.arcBackgroundColor,
+                    shadowEnabled: true,
+                    shadowBlur: this.arcForeGroundShadowBlur,
+                    shadowColor: this.arcForeGroundShadowColor
                 }
             );
 
@@ -256,7 +265,7 @@ export default class View {
                     fill: this.arcForeGroundColor,
                     rotation: this.candenceArcRotation,
                     shadowEnabled: true,
-                    shadowBlur: 10,
+                    shadowBlur: this.arcForeGroundShadowBlur,
                     shadowColor: this.arcForeGroundShadowColor
                 }
             );
@@ -342,23 +351,50 @@ export default class View {
                 }
             );
 
-        this.mask.add(this.speedArcBackground);
-        this.mask.add(this.speedBottom);
-        this.mask.add(this.cadenceArcBackground);
-        this.mask.add(this.cadenceBottom);
+        let width = this.stageWidth * 0.475;
+        let height = this.stageHeight * 0.12;
+        let curveWidth = this.stageHeight * 0.1;
+        let curveRadius = this.stageHeight * 0.05;
 
-        this.mask.add(this.curSpeedArc);
-        this.mask.add(this.averageSpeedArc);
+        this.bottomBar =
+            new Konva.Shape(
+                {
+                    sceneFunc: function (context) {
 
-        this.mask.add(this.curCadenceArc);
-        this.mask.add(this.averageCadenceArc);
+                        context.beginPath();
+                        context.moveTo(0, height);
+                        context.quadraticCurveTo(curveWidth - curveRadius, 0, curveWidth, 0);
+                        context.lineTo(width, 0);
+                        context.quadraticCurveTo(width + curveRadius, 0, width + curveWidth, height);
+                        context.lineTo(0, height);
+                        context.closePath();
+                        context.fillStrokeShape(this);
+                    },
+                    fill: '#FFF',
+                    x: (this.stageWidth - (width + curveWidth)) / 2,
+                    y: this.stageHeight - height,
+                }
+            );
 
-        this.layer.add(this.mask);
+        this.layer.add(this.speedArcBackground);
+        this.layer.add(this.speedBottom);
+        this.layer.add(this.cadenceArcBackground);
+        this.layer.add(this.cadenceBottom);
+
+        this.speedMask.add(this.curSpeedArc);
+        this.speedMask.add(this.averageSpeedArc);
+
+        this.layer.add(this.curCadenceArc);
+        this.layer.add(this.averageCadenceArc);
+
+        this.layer.add(this.speedMask);
         this.layer.add(this.speedDisplayFull);
         this.layer.add(this.speedDisplayDecimal);
         this.layer.add(this.speedDisplayMax);
         this.layer.add(this.cadenceDisplay);
         this.layer.add(this.cadenceDisplayMax);
+
+        this.layer.add(this.bottomBar);
 
         this.stage.add(this.layer);
 
@@ -435,17 +471,19 @@ export default class View {
         this.core.setMaxSpeed(speed);
 
         let opacity: number = 1;
+        let blur: number = this.arcForeGroundShadowBlur;
         let color: string = this.arcBackgroundColor;
 
         if (speed === 0) {
             opacity = 0;
+            blur = 0;
         }
 
         let tween =
             new Konva.Tween(
                 {
                     node: this.curSpeedArc,
-                    angle: this.core.calculateSpeedBasedRotation(speed),
+                    rotation: 360 - this.core.calculateSpeedBasedRotation(speed) + 90,
                     easing: Konva.Easings.EaseInOut,
                     duration: 0.5,
                     opacity: opacity
@@ -456,6 +494,7 @@ export default class View {
 
         if (speed > 0) {
             color = this.arcForeGroundColor;
+            blur = this.arcForeGroundShadowBlur;
         }
 
         tween =
@@ -465,6 +504,7 @@ export default class View {
                     easing: Konva.Easings.EaseInOut,
                     duration: 0.5,
                     fill: color,
+                    shadowBlur: blur
                 }
             );
 
@@ -497,10 +537,12 @@ export default class View {
         this.cadenceDisplayMax.text(this.core.getMaxCadence());
 
         let opacity: number = 1;
+        let blur: number = this.arcForeGroundShadowBlur;
         let color: string = this.arcBackgroundColor;
 
         if (cadence === 0) {
             opacity = 0;
+            blur = 0;
         }
 
         let tween =
@@ -518,6 +560,7 @@ export default class View {
 
         if (cadence > 0) {
             color = this.arcForeGroundColor;
+            blur = this.arcForeGroundShadowBlur;
         }
 
         tween =
@@ -527,6 +570,7 @@ export default class View {
                     easing: Konva.Easings.EaseInOut,
                     duration: 0.5,
                     fill: color,
+                    shadowBlur: blur
                 }
             );
 
