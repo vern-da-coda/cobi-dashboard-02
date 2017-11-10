@@ -60,18 +60,15 @@ export default class Core {
         }
 
         if (speed > 0) {
-            speed =
-                (
+            this.averageSpeed =
+                Core.round(
                     (
-                        this.averageSpeed * (
-                        this.averageSpeedMultiplier - 1)) + speed) / this.averageSpeedMultiplier;
+                        (
+                            this.averageSpeed * (
+                            this.averageSpeedMultiplier - 1)) + speed) / this.averageSpeedMultiplier
+                );
 
-            speed = Core.round(speed);
-
-            if (this.averageSpeed !== speed) {
-                this.averageSpeed = speed;
-                this.storeItem('averageSpeed', this.averageSpeed);
-            }
+            this.storeItem('averageSpeed', this.averageSpeed);
         }
     }
 
@@ -84,18 +81,14 @@ export default class Core {
         }
 
         if (cadence > 0) {
-            cadence =
-                (
+
+            this.averageCadence =
+                Core.round((
                     (
                         this.averageCadence * (
-                        this.averageCadenceMultiplier - 1)) + cadence) / this.averageCadenceMultiplier;
+                        this.averageCadenceMultiplier - 1)) + cadence) / this.averageCadenceMultiplier);
 
-            cadence = Core.round(cadence);
-
-            if (this.averageCadence !== cadence) {
-                this.averageCadence = cadence;
-                this.storeItem('averageCadence', this.averageCadence);
-            }
+            this.storeItem('averageCadence', this.averageCadence);
         }
     }
 

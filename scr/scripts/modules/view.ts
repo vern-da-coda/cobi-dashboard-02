@@ -82,6 +82,7 @@ export default class View {
     private arcForeGroundShadowBlur: number = 10;
     private arcPointerShadowBlur: number = 10;
     private bottomBar;
+    private arcPointerOpacity: number = 0.9;
 
     /**
      *
@@ -113,7 +114,7 @@ export default class View {
         this.speedDisplayMaxX = this.speedArcX - (this.stageWidth * 0.12);
         this.speedDisplayMaxY = this.stageWidth * 0.02;
 
-        this.cadenceDisplayX = this.stageWidth * 0.02;
+        this.cadenceDisplayX = 0;
         this.cadenceDisplayY = this.stageHeight * 0.55;
 
         this.cadenceDisplayMaxX = this.cadenceArcX + (this.stageWidth * 0.3);
@@ -203,7 +204,7 @@ export default class View {
                     innerRadius: this.arcInnerRadius,
                     outerRadius: this.arcOuterRadius,
                     angle: 2,
-                    opacity: 0.9,
+                    opacity: 0,
                     fill: this.arcPointerColor,
                     rotation: this.speedArcRotation,
                     shadowEnabled: true,
@@ -220,7 +221,7 @@ export default class View {
                     innerRadius: this.arcInnerRadius,
                     outerRadius: this.arcOuterRadius,
                     angle: 2,
-                    opacity: 0.9,
+                    opacity: 0,
                     fill: this.arcPointerColor,
                     rotation: this.candenceArcRotation,
                     shadowEnabled: true,
@@ -282,7 +283,7 @@ export default class View {
                     fontFamily: 'UniSans',
                     fill: '#fff',
                     align: 'right',
-                    width: this.stageWidth * 0.3,
+                    width: this.stageWidth * 0.35,
                     shadowEnabled: true,
                     shadowBlur: this.displayShadowBlur,
                     shadowColor: this.displayShadowColor,
@@ -593,6 +594,12 @@ export default class View {
      * @param {boolean} initial
      */
     updateAverageSpeedView(speed: number, initial: boolean = false) {
+
+        let opacity: number = this.arcPointerOpacity;
+        if (speed === null) {
+            opacity = 0;
+        }
+
         speed = Core.round(speed);
 
         this.core.setAverageSpeed(speed);
@@ -614,6 +621,7 @@ export default class View {
                     rotation: rotation,
                     easing: Konva.Easings.EaseInOut,
                     duration: duration,
+                    opacity: opacity
                 }
             );
 
@@ -625,6 +633,12 @@ export default class View {
      * @param {boolean} initial
      */
     updateAverageCadenceView(cadence: number, initial: boolean = false) {
+
+        let opacity: number = this.arcPointerOpacity;
+        if (cadence === null) {
+            opacity = 0;
+        }
+
         cadence = Core.round(cadence);
 
         this.core.setAverageCadence(cadence);
@@ -646,6 +660,7 @@ export default class View {
                     rotation: rotation,
                     easing: Konva.Easings.EaseInOut,
                     duration: duration,
+                    opacity: opacity
                 }
             );
 
