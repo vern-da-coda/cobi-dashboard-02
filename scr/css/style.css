@@ -16,19 +16,21 @@ body, html {
     color: #fff;
     position: absolute;
     top: 0;
-    left: 3px;
+    right: 3px;
+    opacity: .3;
 }
 
 #cadence {
     color: #fff;
     position: absolute;
-    top: 20px;
+    top: 0;
     left: 3px;
+    opacity: .3;
 }
 
 #version {
     color: #666;
     position: absolute;
-    top: 0;
+    bottom: 0;
     right: 3px;
 }

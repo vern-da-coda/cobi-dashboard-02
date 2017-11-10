@@ -71,6 +71,8 @@ export default class View {
     private speedDisplayMaxX: number;
     private speedDisplayMaxY: number;
     private displayMaxSize: number;
+    private displayShadowColor: string = '#00C8E6';
+    private displayShadowBlur: number = 50;
     private cadenceDisplayMax;
     private cadenceDisplayMaxX: number;
     private cadenceDisplayMaxY: number;
@@ -282,8 +284,8 @@ export default class View {
                     align: 'right',
                     width: this.stageWidth * 0.3,
                     shadowEnabled: true,
-                    shadowBlur: 5,
-                    shadowColor: '#fff',
+                    shadowBlur: this.displayShadowBlur,
+                    shadowColor: this.displayShadowColor,
                 }
             );
 
@@ -299,8 +301,8 @@ export default class View {
                     align: 'right',
                     width: this.stageWidth * 0.3,
                     shadowEnabled: true,
-                    shadowBlur: 5,
-                    shadowColor: '#fff',
+                    shadowBlur: this.displayShadowBlur,
+                    shadowColor: this.displayShadowColor,
                 }
             );
 
@@ -314,8 +316,8 @@ export default class View {
                     fontFamily: 'UniSans',
                     fill: '#fff',
                     shadowEnabled: true,
-                    shadowBlur: 5,
-                    shadowColor: '#fff',
+                    shadowBlur: this.displayShadowBlur,
+                    shadowColor: this.displayShadowColor,
                 }
             );
 
@@ -330,8 +332,8 @@ export default class View {
                     fill: '#fff',
                     align: 'right',
                     shadowEnabled: true,
-                    shadowBlur: 5,
-                    shadowColor: '#fff',
+                    shadowBlur: this.displayShadowBlur,
+                    shadowColor: this.displayShadowColor,
                 }
             );
 
@@ -346,8 +348,8 @@ export default class View {
                     fill: '#fff',
                     align: 'right',
                     shadowEnabled: true,
-                    shadowBlur: 5,
-                    shadowColor: '#fff',
+                    shadowBlur: this.displayShadowBlur,
+                    shadowColor: this.displayShadowColor,
                 }
             );
 
@@ -602,7 +604,7 @@ export default class View {
 
         let rotation = 0;
         if (speed !== 0) {
-            rotation = this.core.calculateSpeedBasedRotation(speed) - this.speedArcRotation;
+            rotation = 360 - (this.core.calculateSpeedBasedRotation(speed) + this.speedArcRotation);
         }
 
         let tween =
@@ -634,7 +636,7 @@ export default class View {
 
         let rotation = 0;
         if (cadence !== 0) {
-            rotation = this.core.calculateCadenceBasedRotation(cadence) + 180;
+            rotation = this.core.calculateCadenceBasedRotation(cadence) + this.candenceArcRotation;
         }
 
         let tween =
