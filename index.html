@@ -20,10 +20,24 @@
 
     <body>
 
-        <div id="container"></div>
+        <div id="home" class="content hidden">
+            <div class="app-info-header">
+                <img class="app-icon" src="https://cdn.cobi.bike/devkit/v1.0.0/resources/images/app-debug.jpg">
+            </div>
 
-        <div id="cadence">-</div>
-        <div id="speed">-</div>
+            <ul class="table-view">
+                <li class="table-view-cell">
+                    <label> Maximale Geschwindigkeit  </label>
+                    <span id="max-speed" class="badge">-</span>
+                </li>
+                <li class="table-view-cell">
+                    <label> Durschnittliche Geschwindigkeit  </label>
+                    <span id="avr-speed" class="badge">-</span>
+                </li>
+            </ul>
+        </div>
+
+        <div id="experience" class="hidden"> </div>
 
         <div id="version"></div>
 
