@@ -1,71 +1,80 @@
-import Core from './modules/core';
-import View from './modules/view';
+import Core from './components/core';
+import ExperienceView from './components/views/experience';
 
 /**
  *
  */
 export default class Dashboard {
 
-    private static version: string = '0.1.3';
+    private static version: string = '0.2.0';
+
+    private stageContainer: string;
+    private stageWidth: number;
+    private stageHeight: number;
 
     private core: Core = null;
-    private view: View = null;
+    private experienceView: ExperienceView = null;
 
     /**
      *
      */
     constructor(stageContainer: string, stageWidth: number, stageHeight: number) {
         this.core = new Core();
-        this.view = new View(this.core, stageContainer, stageWidth, stageHeight);
+
+        this.stageContainer = stageContainer;
+        this.stageWidth = stageWidth;
+        this.stageHeight = stageHeight;
     }
 
     /**
      *
      */
-    initView() {
-        this.view.initView();
+    initExperienceView() {
+
+        document.getElementById(this.stageContainer).classList.remove('hidden');
+
+        this.experienceView =
+            new ExperienceView(
+                this.core,
+                this.stageContainer,
+                this.stageWidth,
+                this.stageHeight
+            );
+
+        this.experienceView.initView();
+        this.experienceView.initAverageSpeedView();
+        this.experienceView.initAverageCadenceView();
+        this.experienceView.initSpeedCheck();
+        this.experienceView.initCadenceCheck();
     }
 
     /**
      *
      */
-    initAverageSpeedView() {
-        this.view.initAverageSpeedView();
-    }
+    initHomeView() {
 
-    /**
-     *
-     */
-    initAverageCadenceView() {
-        this.view.initAverageCadenceView();
-    }
+        document.getElementById('home').classList.remove('hidden');
 
-    /**
-     *
-     */
-    initSpeedCheck() {
-        this.view.initSpeedCheck();
-    }
+        document.getElementById('max-speed').innerHTML =
+            this.core.getMaxSpeed() + ' km/h';
 
-    /**
-     *
-     */
-    initCadenceCheck() {
-        this.view.initCadenceCheck();
+        document.getElementById('avr-speed').innerHTML =
+            this.core.getAverageSpeed() + ' km/h';
+
     }
 
     /**
      * @param {number} speed
      */
     updateCurrentSpeedView(speed: number) {
-        this.view.updateCurrentSpeedView(speed);
+        this.experienceView.updateCurrentSpeedView(speed);
     }
 
     /**
      * @param {number} cadence
      */
     updateCurrentCadenceView(cadence: number) {
-        this.view.updateCurrentCadenceView(cadence);
+        this.experienceView.updateCurrentCadenceView(cadence);
     }
 
     /**
@@ -73,7 +82,7 @@ export default class Dashboard {
      * @param {boolean} initial
      */
     updateAverageSpeedView(speed: number, initial: boolean = false) {
-        this.view.updateAverageSpeedView(speed, initial);
+        this.experienceView.updateAverageSpeedView(speed, initial);
     }
 
     /**

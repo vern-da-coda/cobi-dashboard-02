@@ -1,5 +1,4 @@
-import Core from './core';
-import Dashboard from '../dashboard';
+import Core from './../core';
 
 //import * as Konva from 'konva';
 declare let Konva: any;
@@ -7,7 +6,7 @@ declare let Konva: any;
 /**
  *
  */
-export default class View {
+export default class ExperienceView {
 
     private core: Core = null;
 
@@ -133,7 +132,7 @@ export default class View {
                 {
                     container: this.stageContainer,
                     width: this.stageWidth,
-                    height: this.stageHeight
+                    height: this.stageHeight,
                 }
             );
 
@@ -142,7 +141,6 @@ export default class View {
         this.speedMask =
             new Konva.Group(
                 {
-
                     clip: {
                         x: this.speedArcX,
                         y: 0,
@@ -379,8 +377,22 @@ export default class View {
                 }
             );
 
+        let stageFade = new Konva.Rect(
+            {
+                x: 0,
+                y: 0,
+                // stroke: 'red',
+                width: this.stageWidth,
+                height: this.stageHeight,
+                fill: '#1d1d23',
+                draggable: true,
+                globalCompositeOperation: 'multiply'
+            }
+        );
+
         this.layer.add(this.speedArcBackground);
         this.layer.add(this.speedBottom);
+
         this.layer.add(this.cadenceArcBackground);
         this.layer.add(this.cadenceBottom);
 
@@ -394,14 +406,30 @@ export default class View {
         this.layer.add(this.speedDisplayFull);
         this.layer.add(this.speedDisplayDecimal);
         this.layer.add(this.speedDisplayMax);
+
         this.layer.add(this.cadenceDisplay);
         this.layer.add(this.cadenceDisplayMax);
 
         this.layer.add(this.bottomBar);
 
+        this.layer.add(stageFade);
+
         this.stage.add(this.layer);
 
-        document.getElementById('version').innerHTML = Dashboard.getVersion();
+        let tween =
+            new Konva.Tween(
+                {
+                    node: stageFade,
+                    opacity: 0,
+                    duration: 2,
+                    easing: Konva.Easings.EaseIn,
+                    onFinish: function () {
+                        stageFade.destroy();
+                    }
+                }
+            );
+
+        tween.play();
     }
 
     /**
@@ -512,15 +540,6 @@ export default class View {
             );
 
         tween.play();
-
-        document.getElementById('speed').innerHTML =
-            Core.decimal(speed) +
-            ' > ' +
-            this.core.getAverageSpeed() +
-            ' - (' +
-            this.core.getMaxSpeed() +
-            '/' +
-            this.core.getMaxSpeedCeiling() + ')';
     }
 
     /**
@@ -578,15 +597,6 @@ export default class View {
             );
 
         tween.play();
-
-        document.getElementById('cadence').innerHTML =
-            Core.decimal(cadence) +
-            ' > ' +
-            this.core.getAverageCadence() +
-            ' - (' +
-            this.core.getMaxCadence() +
-            '/' +
-            this.core.getMaxCadenceCeiling() + ')';
     }
 
     /**

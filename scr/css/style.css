@@ -6,26 +6,8 @@ body, html {
     background-color: #1d1d23;
 }
 
-.center {
-    margin: auto;
-    width: 50%;
-    padding: 10px;
-}
-
-#speed {
-    color: #fff;
-    position: absolute;
-    top: 0;
-    right: 3px;
-    opacity: .3;
-}
-
-#cadence {
-    color: #fff;
-    position: absolute;
-    top: 0;
-    left: 3px;
-    opacity: .3;
+.hidden {
+    display: none;
 }
 
 #version {
