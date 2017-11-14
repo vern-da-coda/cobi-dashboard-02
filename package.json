@@ -1,6 +1,6 @@
 {
   "name":            "COBI-BK-Dashboard",
-  "version":         "0.2.1",
+  "version":         "0.2.2",
   "description":     "Dashboard Module for COBI - www.cobi.bkie",
   "url":             "http://cobi.dashboard.kaemmereit.de/",
   "main":            "main.ts",
