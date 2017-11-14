@@ -1,6 +1,6 @@
 import Core from './../core';
 
-//import * as Konva from 'konva';
+// import * as Konva from 'konva';
 declare let Konva: any;
 
 /**
@@ -381,12 +381,9 @@ export default class ExperienceView {
             {
                 x: 0,
                 y: 0,
-                // stroke: 'red',
                 width: this.stageWidth,
                 height: this.stageHeight,
-                fill: '#1d1d23',
-                draggable: true,
-                globalCompositeOperation: 'multiply'
+                fill: '#1d1d23'
             }
         );
 
