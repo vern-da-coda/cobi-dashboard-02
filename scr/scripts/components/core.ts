@@ -23,7 +23,7 @@ export default class Core {
     constructor() {
         this.localStorageAvailable =
             (
-                typeof(
+                typeof (
                     Storage) !== 'undefined');
     }
 
@@ -99,8 +99,8 @@ export default class Core {
         if (this.localStorageAvailable === true) {
             let value = localStorage.getItem('averageSpeed');
 
-            if (typeof(
-                    value) !== 'undefined') {
+            if (typeof (
+                value) !== 'undefined') {
                 this.averageSpeed = <number>value;
             }
         }
@@ -115,8 +115,8 @@ export default class Core {
         if (this.localStorageAvailable === true) {
             let value = localStorage.getItem('averageCadence');
 
-            if (typeof(
-                    value) !== 'undefined') {
+            if (typeof (
+                value) !== 'undefined') {
                 this.averageCadence = <number>value;
             }
         }
@@ -148,12 +148,11 @@ export default class Core {
         if (this.localStorageAvailable === true) {
             let value = localStorage.getItem('maxSpeed');
 
-            if (typeof(
-                    value) !== 'undefined') {
+            if (typeof (
+                value) !== 'undefined') {
                 this.maxSpeed = <number>value;
             }
-        }
-        else {
+        } else {
             this.maxSpeed = this.getAverageSpeed();
         }
 
@@ -191,12 +190,11 @@ export default class Core {
         if (this.localStorageAvailable === true) {
             let value = localStorage.getItem('maxCadence');
 
-            if (typeof(
-                    value) !== 'undefined') {
+            if (typeof (
+                value) !== 'undefined') {
                 this.maxCadence = <number>value;
             }
-        }
-        else {
+        } else {
             this.maxCadence = this.getAverageCadence();
         }
 

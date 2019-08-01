@@ -2,46 +2,55 @@ import Dashboard from "./dashboard";
 
 declare let COBI: any;
 
-let dashboard = new Dashboard('experience', window.innerWidth, window.innerHeight);
+init();
 
-COBI.init('token — can by anything right now');
+window.onresize = init;
 
-if (COBI.parameters.state() === 'experience') {
+/**
+ *
+ */
+function init() {
 
-    dashboard.initExperienceView();
+    let dashboard = new Dashboard('experience', window.innerWidth, window.innerHeight);
 
-    COBI.app.theme.subscribe(
-        function (value) {
-            console.log(value)
-        }
-    );
+    COBI.init('token — can by anything right now');
 
-    COBI.rideService.speed.subscribe(
-        function (value) {
-            dashboard.updateCurrentSpeedView(value * 3.6);
-        }
-    );
+    if (COBI.parameters.state() === 'experience') {
 
-    COBI.tourService.averageSpeed.subscribe(
-        function (value) {
-            dashboard.updateAverageSpeedView(value * 3.6);
-        }
-    );
+        dashboard.initExperienceView();
 
-    COBI.rideService.cadenceAvailability.subscribe(
-        function (value) {
-            console.log('cadence available: ' + value);
-        }
-    );
+        COBI.app.theme.subscribe(
+            function (value) {
+                console.log(value)
+            }
+        );
 
-    COBI.rideService.cadence.subscribe(
-        function (value) {
-            dashboard.updateCurrentCadenceView(value);
-        }
-    );
-}
-else {
-    dashboard.initHomeView();
+        COBI.rideService.speed.subscribe(
+            function (value) {
+                dashboard.updateCurrentSpeedView(value * 3.6);
+            }
+        );
+
+        COBI.tourService.averageSpeed.subscribe(
+            function (value) {
+                dashboard.updateAverageSpeedView(value * 3.6);
+            }
+        );
+
+        COBI.rideService.cadenceAvailability.subscribe(
+            function (value) {
+                console.log('cadence available: ' + value);
+            }
+        );
+
+        COBI.rideService.cadence.subscribe(
+            function (value) {
+                dashboard.updateCurrentCadenceView(value);
+            }
+        );
+    } else {
+        dashboard.initHomeView();
+    }
 }
 
 document.getElementById('version').innerHTML = Dashboard.getVersion();

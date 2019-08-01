@@ -6,7 +6,7 @@ import ExperienceView from './components/views/experience';
  */
 export default class Dashboard {
 
-    private static version: string = '0.2.2';
+    private static version: string = '0.2.4';
 
     private stageContainer: string;
     private stageWidth: number;
